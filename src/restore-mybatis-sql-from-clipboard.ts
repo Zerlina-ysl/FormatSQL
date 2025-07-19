@@ -1,7 +1,7 @@
 import { Clipboard, showHUD, getSelectedText, showToast, Toast } from "@raycast/api";
 import { formatSql, parseMybatisLog } from "./utils";
 
-export default async function command() {
+export default async function sqlFormatFromClipboard() {
   try {
     // 获取选中的文本
     const selectedText = await getSelectedText();
