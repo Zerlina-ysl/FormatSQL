@@ -11,8 +11,12 @@ export default async function sqlFormatFromClipboard() {
       return;
     }
 
+    // console.log("selectedText", selectedText);
+
     // 解析SQL和参数
     const { sql, params } = parseMybatisLog(selectedText);
+
+    // console.log("sql", sql);
 
     if (!sql) {
       await showHUD("未找到有效的SQL语句");

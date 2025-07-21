@@ -22,12 +22,9 @@ export default function SqlInputForm() {
       const formatted = formatSql(sql, params);
       setFormattedSql(formatted);
 
-      // 复制到剪贴板
-      Clipboard.copy(formatted);
-
       showToast({
         style: Toast.Style.Success,
-        title: "SQL已格式化并复制到剪贴板",
+        title: "SQL已格式化",
       });
 
       // 自动显示详情页面
