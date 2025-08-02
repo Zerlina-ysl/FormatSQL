@@ -28,17 +28,24 @@ function decodeHtmlEntities(text: string): string {
  * 解析Mybatis日志，提取SQL语句和参数
  */
 export function parseMybatisLog(log: string): { sql: string | null; params: SqlParam[] } {
-  // 对日志进行HTML解码
-  const decodedLog = decodeHtmlEntities(log);
+  // 对日志进行HTML解码并清理文本
+  let decodedLog = decodeHtmlEntities(log);
+
+  // 清理文本：统一换行符，但保留必要的空白结构
+  decodedLog = decodedLog
+    .replace(/\r\n/g, '\n')  // 统一换行符
+    .replace(/\r/g, '\n')    // 统一换行符
+    .replace(/\t/g, ' ')     // 制表符转空格
+    .trim();
 
   // 提取SQL语句 - 匹配SELECT/INSERT/UPDATE/DELETE开头的语句
   // 改进正则表达式以处理更复杂的日志格式
-  const sqlRegex = /Preparing:\s*(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\n.*?Parameters:|==>.*?Parameters:|<==|\d{4}-\d{2}-\d{2}|$)/i;
+  const sqlRegex = /Preparing:\s*(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\s+\d{4}-\d{2}-\d{2}.*?Parameters:|==>.*?Parameters:|<==|$)/i;
   let sqlMatch = decodedLog.match(sqlRegex);
 
   // 如果没有匹配到 Preparing: 格式，尝试直接匹配SQL语句
   if (!sqlMatch) {
-    const fallbackRegex = /(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=Parameters:|==>|<==|\d{4}-\d{2}-\d{2}|\[DEBUG\]|\[INFO\]|$)/i;
+    const fallbackRegex = /(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\s+\d{4}-\d{2}-\d{2}.*?Parameters:|Parameters:|==>|<==|\[DEBUG\]|\[INFO\]|$)/i;
     sqlMatch = decodedLog.match(fallbackRegex);
   }
 
@@ -49,8 +56,21 @@ export function parseMybatisLog(log: string): { sql: string | null; params: SqlP
     sql = sql.replace(/.*?Preparing:\s*/, '').trim();
   }
 
+  // 验证提取的SQL是否有效
+  if (sql) {
+    // 检查SQL是否包含基本的SQL结构
+    const hasValidStructure = /^(SELECT|INSERT|UPDATE|DELETE)\s+.+/i.test(sql);
+    const hasMinimumLength = sql.length > 10; // 至少要有一定长度
+    const hasValidKeywords = /(FROM|INTO|SET|WHERE|VALUES)/i.test(sql);
+
+    if (!hasValidStructure || !hasMinimumLength || !hasValidKeywords) {
+      sql = null; // 如果不是有效的SQL结构，则置为null
+    }
+  }
+
   // 提取参数行 - 支持带有 ==> 前缀的参数行
-  const paramsRegex = /(?:==>)?\s*Parameters:([\s\S]*?)(?=\n.*?\d{4}-\d{2}-\d{2}|<==|\[DEBUG\]|\[INFO\]|$)/i;
+  // 改进正则表达式以匹配完整的参数行
+  const paramsRegex = /==> Parameters:\s*([^]*?)(?=\s+\d{4}-\d{2}-\d{2}.*?<==|<==|$)/i;
   const paramsMatch = decodedLog.match(paramsRegex);
   let paramsString = paramsMatch ? paramsMatch[1].trim() : "";
 
@@ -122,6 +142,9 @@ export function formatSql(sql: string, params: SqlParam[]): string {
     });
   } catch (error) {
     console.error("SQL格式化失败:", error);
+    console.error("原始SQL:", formattedSql);
+    // 如果格式化失败，返回替换参数后的原始SQL
+    // 不抛出错误，让用户至少能看到替换参数后的结果
   }
 
   return formattedSql;
