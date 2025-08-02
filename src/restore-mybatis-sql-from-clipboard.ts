@@ -1,25 +1,21 @@
-import { Clipboard, showHUD, getSelectedText, showToast, Toast } from "@raycast/api";
+import { Clipboard, showHUD, showToast, Toast } from "@raycast/api";
 import { formatSql, parseMybatisLog } from "./utils";
 
 export default async function sqlFormatFromClipboard() {
   try {
-    // 获取选中的文本
-    const selectedText = await getSelectedText();
+    // 从剪贴板获取文本，而不是获取选中的文本
+    const clipboardText = await Clipboard.readText();
 
-    if (!selectedText) {
-      await showHUD("请先选择Mybatis日志文本");
+    if (!clipboardText) {
+      await showHUD("剪贴板中没有文本内容");
       return;
     }
 
-    // console.log("selectedText", selectedText);
-
     // 解析SQL和参数
-    const { sql, params } = parseMybatisLog(selectedText);
-
-    // console.log("sql", sql);
+    const { sql, params } = parseMybatisLog(clipboardText);
 
     if (!sql) {
-      await showHUD("未找到有效的SQL语句");
+      await showHUD("未找到有效的SQL语句，请确保剪贴板中包含完整的Mybatis日志");
       return;
     }
 
