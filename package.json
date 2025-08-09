@@ -1,11 +1,15 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "mybatis-sql-restore",
+  "name": "Mybatis SQL Restore",
   "title": "Mybatis SQL Restore",
   "description": "将mybatis日志中的sql日志还原为原始mysql",
-  "icon": "extension-icon.png",
+  "icon": "extension_icon.png",
   "author": "zerlina_ysl",
   "license": "MIT",
+  "categories": [
+    "Developer Tools",
+    "Productivity"
+  ],
   "commands": [
     {
       "name": "restore-mybatis-sql-from-clipboard",
