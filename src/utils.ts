@@ -10,13 +10,13 @@ type SqlParam = string | number | boolean;
  */
 function decodeHtmlEntities(text: string): string {
   const htmlEntities: { [key: string]: string } = {
-    '&lt;': '<',
-    '&gt;': '>',
-    '&amp;': '&',
-    '&quot;': '"',
-    '&#39;': "'",
-    '&apos;': "'",
-    '&nbsp;': ' '
+    "&lt;": "<",
+    "&gt;": ">",
+    "&amp;": "&",
+    "&quot;": '"',
+    "&#39;": "'",
+    "&apos;": "'",
+    "&nbsp;": " ",
   };
 
   return text.replace(/&[a-zA-Z0-9#]+;/g, (entity) => {
@@ -33,27 +33,29 @@ export function parseMybatisLog(log: string): { sql: string | null; params: SqlP
 
   // 清理文本：统一换行符，但保留必要的空白结构
   decodedLog = decodedLog
-    .replace(/\r\n/g, '\n')  // 统一换行符
-    .replace(/\r/g, '\n')    // 统一换行符
-    .replace(/\t/g, ' ')     // 制表符转空格
+    .replace(/\r\n/g, "\n") // 统一换行符
+    .replace(/\r/g, "\n") // 统一换行符
+    .replace(/\t/g, " ") // 制表符转空格
     .trim();
 
   // 提取SQL语句 - 匹配SELECT/INSERT/UPDATE/DELETE开头的语句
   // 改进正则表达式以处理更复杂的日志格式
-  const sqlRegex = /Preparing:\s*(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\s+\d{4}-\d{2}-\d{2}.*?Parameters:|==>.*?Parameters:|<==|$)/i;
+  const sqlRegex =
+    /Preparing:\s*(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\s+\d{4}-\d{2}-\d{2}.*?Parameters:|==>.*?Parameters:|<==|$)/i;
   let sqlMatch = decodedLog.match(sqlRegex);
 
   // 如果没有匹配到 Preparing: 格式，尝试直接匹配SQL语句
   if (!sqlMatch) {
-    const fallbackRegex = /(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\s+\d{4}-\d{2}-\d{2}.*?Parameters:|Parameters:|==>|<==|\[DEBUG\]|\[INFO\]|$)/i;
+    const fallbackRegex =
+      /(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\s+\d{4}-\d{2}-\d{2}.*?Parameters:|Parameters:|==>|<==|\[DEBUG\]|\[INFO\]|$)/i;
     sqlMatch = decodedLog.match(fallbackRegex);
   }
 
   let sql = sqlMatch ? sqlMatch[0].trim() : null;
 
   // 清理SQL语句，移除 "Preparing:" 前缀
-  if (sql && sql.includes('Preparing:')) {
-    sql = sql.replace(/.*?Preparing:\s*/, '').trim();
+  if (sql && sql.includes("Preparing:")) {
+    sql = sql.replace(/.*?Preparing:\s*/, "").trim();
   }
 
   // 验证提取的SQL是否有效
@@ -75,16 +77,18 @@ export function parseMybatisLog(log: string): { sql: string | null; params: SqlP
   let paramsString = paramsMatch ? paramsMatch[1].trim() : "";
 
   // 如果参数字符串包含多行，只取第一行，避免无效信息影响
-  if (paramsString.includes('\n')) {
-    const lines = paramsString.split('\n');
-    paramsString = lines.find(line =>
-      line.includes('(Integer)') ||
-      line.includes('(Long)') ||
-      line.includes('(Date)') ||
-      line.includes('(String)') ||
-      line.includes('(Boolean)') ||
-      line.includes('(Timestamp)')
-    ) || lines[0];
+  if (paramsString.includes("\n")) {
+    const lines = paramsString.split("\n");
+    paramsString =
+      lines.find(
+        (line) =>
+          line.includes("(Integer)") ||
+          line.includes("(Long)") ||
+          line.includes("(Date)") ||
+          line.includes("(String)") ||
+          line.includes("(Boolean)") ||
+          line.includes("(Timestamp)"),
+      ) || lines[0];
     paramsString = paramsString.trim();
   }
 

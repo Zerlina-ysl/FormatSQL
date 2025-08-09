@@ -49,16 +49,13 @@ ${formattedSql}
         actions={
           <ActionPanel>
             <Action
-              title="Copy Formatted SQL"
+              title="Copy Formatted Sql"
               onAction={() => {
                 Clipboard.copy(formattedSql);
                 showToast({ title: "已复制到剪贴板" });
               }}
             />
-            <Action
-              title="返回输入表单"
-              onAction={() => setShowDetail(false)}
-            />
+            <Action title="返回输入表单" onAction={() => setShowDetail(false)} />
           </ActionPanel>
         }
       />
@@ -69,15 +66,12 @@ ${formattedSql}
     <Form
       actions={
         <ActionPanel>
-          <Action.SubmitForm title="Format SQL" onSubmit={handleSubmit} />
+          <Action.SubmitForm title="Format Sql" onSubmit={handleSubmit} />
           {formattedSql && (
             <>
+              <Action title="查看格式化Sql" onAction={() => setShowDetail(true)} />
               <Action
-                title="查看格式化SQL"
-                onAction={() => setShowDetail(true)}
-              />
-              <Action
-                title="Copy Formatted SQL"
+                title="Copy Formatted Sql"
                 onAction={() => {
                   Clipboard.copy(formattedSql);
                   showToast({ title: "已复制到剪贴板" });
