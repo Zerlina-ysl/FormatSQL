@@ -30,5 +30,5 @@ export const MESSAGES = {
   },
   HUD: {
     COPIED: "Copied to clipboard",
-  }
+  },
 } as const;

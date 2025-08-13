@@ -47,7 +47,7 @@ export default function RestoreMybatisSqlFromInputForm() {
         title: MESSAGES.ERROR.GENERAL_ERROR,
         message: error instanceof Error ? error.message : String(error),
       });
-    } 
+    }
   };
 
   if (showDetail && formattedSql) {
@@ -109,7 +109,7 @@ ${formattedSql}
           id="formattedSql"
           title={MESSAGES.TITLES.FORMAT_RESULT}
           value={formattedSql}
-          onChange={() => {}} 
+          onChange={() => {}}
           enableMarkdown={true}
         />
       )}

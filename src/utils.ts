@@ -64,8 +64,8 @@ export function parseMybatisLog(log: string): ParseResult {
 function normalizeLogText(log: string): string {
   return log
     .replace(/\r\n/g, "\n") // Normalize line breaks
-    .replace(/\r/g, "\n")   // Normalize line breaks
-    .replace(/\t/g, " ")    // Convert tabs to spaces
+    .replace(/\r/g, "\n") // Normalize line breaks
+    .replace(/\t/g, " ") // Convert tabs to spaces
     .trim();
 }
 
@@ -74,12 +74,14 @@ function normalizeLogText(log: string): string {
  */
 function extractSqlStatement(log: string): string | null {
   // Primary regex: Match SQL statements with "Preparing:" prefix
-  const preparingRegex = /Preparing:\s*(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\s+\d{4}-\d{2}-\d{2}.*?Parameters:|==>.*?Parameters:|<==|$)/i;
+  const preparingRegex =
+    /Preparing:\s*(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\s+\d{4}-\d{2}-\d{2}.*?Parameters:|==>.*?Parameters:|<==|$)/i;
   let sqlMatch = log.match(preparingRegex);
 
   // Fallback regex: Direct SQL statement matching
   if (!sqlMatch) {
-    const fallbackRegex = /(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\s+\d{4}-\d{2}-\d{2}.*?Parameters:|Parameters:|==>|<==|\[DEBUG\]|\[INFO\]|$)/i;
+    const fallbackRegex =
+      /(SELECT|INSERT|UPDATE|DELETE)[\s\S]*?(?=\s+\d{4}-\d{2}-\d{2}.*?Parameters:|Parameters:|==>|<==|\[DEBUG\]|\[INFO\]|$)/i;
     sqlMatch = log.match(fallbackRegex);
   }
 
@@ -131,7 +133,7 @@ function extractParameters(log: string): SqlParam[] {
  */
 function findParameterLine(lines: string[]): string | undefined {
   const typePatterns = ["(Integer)", "(Long)", "(Date)", "(String)", "(Boolean)", "(Timestamp)"];
-  return lines.find(line => typePatterns.some(pattern => line.includes(pattern)));
+  return lines.find((line) => typePatterns.some((pattern) => line.includes(pattern)));
 }
 
 /**
